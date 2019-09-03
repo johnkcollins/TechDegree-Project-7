@@ -1,9 +1,14 @@
 import React from 'react';
+import {
+  BrowserRouter,
+    withRouter
+} from 'react-router-dom';
 
 const Search = (props) => {
 
   //Passes the submit to App.js to handle state
   function handleSubmit (e) {
+    this.props.history.push("/search");
     props.handleSubmit(e).bind(e);
   }
 
@@ -13,6 +18,7 @@ const Search = (props) => {
   }
 
   return(
+      <BrowserRouter>
           <form className="search-form" onSubmit={props.handleSubmit.bind(this)} >
           <input type="search"
                   name="search"
@@ -27,7 +33,8 @@ const Search = (props) => {
             </svg>
           </button>
         </form>
+      </BrowserRouter>
   )
 };
 
-export default Search
+export default withRouter(Search);
