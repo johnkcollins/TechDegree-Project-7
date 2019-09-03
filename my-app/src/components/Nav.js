@@ -1,13 +1,13 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-const Nav = ()=> {
+const Nav = (props) => {
       return (
         <nav className="main-nav">
           <ul>
-              <li><NavLink to={'/dry_tortugas'}>Dry Tortugas</NavLink></li>
-              <li><NavLink to={'/sea_turtles'}>Sea Turtles</NavLink></li>
-              <li><NavLink to={'/sand_crabs'}>Sand Crabs</NavLink></li>
+              <li><NavLink onClick={() => props.performSearch('Dry Tortugas')} exact to={`/dry tortugas`} >Dry Tortugas</NavLink></li>
+              <li><NavLink onClick={() => props.performSearch('sea turtles')} exact to={`/sea turtles`} >Sea Turtles</NavLink></li>
+              <li><NavLink onClick={() => props.performSearch('sand crabs')} exact to={`/sand crabs`} >Sand Crabs</NavLink></li>
           </ul>
         </nav>
     );
