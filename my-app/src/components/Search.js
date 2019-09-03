@@ -1,34 +1,24 @@
-import React, { Component } from 'react';
-import {
-  Route
-} from 'react-router-dom';
+import React from 'react';
 
-export default class Search extends Component {
+const Search = (props) => {
 
-  state = {
-    searchText: ''
-  };
+  //Passes the submit to App.js to handle state
+  function handleSubmit (e) {
+    props.handleSubmit(e);
+  }
 
-  onSearchChange = e => {
-    this.setState ({ searchText: e.target.value });
-    return (<Route path="/search_results"/>);
-  };
+  //Passes the search change to App.js to handle state
+  function onSearchChange (e){
+    props.onSearchChange(e);
+  }
 
-  handleSubmit = e => {
-    e.preventDefault();
-    this.props.onSearch(this.state.searchText);
-    e.currentTarget.reset();
-  };
-
-  render(){
   return(
-      <form className="search-form" onSubmit={this.handleSubmit}>
+      <form className="search-form" onSubmit={props.handleSubmit} >
         <input type="search"
                name="search"
                placeholder="Search..."
                required
-               onChange={this.onSearchChange}
-               ref={(input) => this.query = input}
+               onChange={props.onSearchChange}
         />
         <button type="submit" className="search-button" id="submit">
           <svg fill="#fff" height="24" viewBox="0 0 23 23" width="24" xmlns="http://www.w3.org/2000/svg">
@@ -37,6 +27,8 @@ export default class Search extends Component {
           </svg>
         </button>
       </form>
-  )}
+  )
 };
+
+export default Search
 
