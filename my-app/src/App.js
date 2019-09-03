@@ -85,7 +85,7 @@ export default class App extends PureComponent {
   return (
     <BrowserRouter>
       <div className="container">
-        <Search onSearchChange={this.onSearchChange} handleSubmit={this.handleSubmit}/>
+        <Route path="/" render={()=><Search onSearchChange={this.onSearchChange} handleSubmit={this.handleSubmit}/>} />
         <Nav performSearch={this.performSearch}/>
         <nav className="photo-container">
         {
