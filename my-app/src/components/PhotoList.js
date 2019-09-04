@@ -13,7 +13,6 @@ const PhotoList = props => {
      ? data.url_l
      : data.url_sq);
   }
-  console.log(props.data.activeSearch);
   if((!props.data.loading) && (props.data.query) && (props.data.activeSearch !== null)){
     photos = results.map(photo => <Photo url={getUrl(photo)} key={photo.id}/>);
   } else if (props.data.activeSearch === null){
