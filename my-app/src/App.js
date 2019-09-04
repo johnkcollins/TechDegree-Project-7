@@ -21,8 +21,10 @@ export default class App extends PureComponent {
           this.state = {
             loading: true,
             loadedSearch: ['dry tortugas', 'sea turtles', 'sand crabs'],
-            query: 'dry tortugas',
-            redirect: false
+            query: ' ',
+            redirect: false,
+            activeSearch: [],
+            h2: ''
           }
   }
 
@@ -30,7 +32,7 @@ export default class App extends PureComponent {
   //The first is displayed on the page, and the 2nd is saved for later use
   componentDidMount() {
     this.buildPhotoStates();
-    this.performSearch(this.state.query);
+    this.performSearch('solar flare');
   }
 
   //This downloads the button items as "loadedSearch" in state for later retrieval
@@ -73,28 +75,47 @@ export default class App extends PureComponent {
       axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&safe_search=1&content_type=photo&extras=url_l,url_sq&per_page=24&page=1&format=json&nojsoncallback=1`)
           //Response is returned in JSON as requested from the API
           .then(response => {
-            this.setState({
-              activeSearch: response.data.photos.photo,
-              loading: false,
-              h2: query,
-              query
-            })
+
+            //Checks to see if the search returned any results
+            (response.data.photos.photo.length > 0)
+                ?
+                  this.setState({
+                    activeSearch: response.data.photos.photo,
+                    loading: false,
+                    h2: query,
+                    query
+                  })
+                : this.searchPath('no results');
           })
           .catch(error => {
             console.log('Error fetching and parsing data', error);
           });
   };
 
+  //Changes the status of redirect to false when the Nav links are clicked
   resetRedirect(){
-    this.setState({
-      redirect: false
-    })
+    if(this.state.activeSearch) {
+      this.setState({
+        redirect: false,
+      });
+      this.searchPath();
+    }
   }
 
-  renderRedirect(){
-    if (this.state.redirect)
-    {
-      return <Redirect to="/search"/>
+  //Changes the path for search results
+  searchPath(string){
+    console.log(this.state.activeSearch.length + " " + this.state.loading);
+    if(string === 'no results'){
+      this.setState({
+        h2: 'Sorry',
+        activeSearch: [],
+        redirect: true
+      });
+      return <Route path="/no-results" component={NotFound}/>
+    } else if ((this.state.activeSearch) && (!string === 'no results')){
+      if(this.state.activeSearch.length > 0) {
+        return <Redirect to="/search"/>
+      }
     }
   }
 
@@ -103,24 +124,20 @@ export default class App extends PureComponent {
   return (
     <BrowserRouter>
       <div className="container">
-        <Route path="/" render={()=><Search to='/search' onSearchChange={this.onSearchChange} handleSubmit={this.handleSubmit} />} />
-        {this.renderRedirect()}
+        <Route path="/" render={()=><Search onSearchChange={this.onSearchChange} handleSubmit={this.handleSubmit} />} />
+        {this.searchPath()}
         <Nav performSearch={this.performSearch} resetRedirect={this.resetRedirect}/>
         <nav className="photo-container">
-        {
-          (this.state.loading)
-              ? <h2>Dry Tortugas</h2>
-              : <h2>{this.state.h2} Photos</h2>
-        }
+        <h2>{(this.state.h2 === 'Sorry')? 'Sorry' : `${this.state.h2} Photos`}</h2>
           {
             (this.state.loading)
             ? <p>Loading.....</p>
             : <Switch>
-            <Route exact path="/" render={() => <Redirect to="/dry tortugas"/>} />
+            <Route exact path="/" render={()=> <PhotoList data={this.state}/>} />
             <Route path="/dry tortugas" render={()=> <PhotoList data={this.state} search={0}/>}/>
             <Route path="/sea turtles" render={()=> <PhotoList data={this.state} search={1}/>}/>
             <Route path="/sand crabs" render={()=> <PhotoList data={this.state} search={2}/>}/>
-            <Route path="/search" render={()=> <PhotoList data={this.state}/>} />
+            <Route path="/search" render={()=> <PhotoList data={this.state} /> }  />
             <Route component={NotFound} />
             </Switch>
           }
