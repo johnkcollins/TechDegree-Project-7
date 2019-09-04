@@ -4,12 +4,11 @@ import apiKey from './config';
 import {
   BrowserRouter,
   Route,
-  Switch,
-  Redirect
+  Switch
 } from 'react-router-dom';
 
 //App components
-import Search from './components/Search';
+import SearchForm from './components/SearchForm';
 import Nav from './components/Nav';
 import PhotoList from './components/PhotoList';
 import NotFound from './components/NotFound';
@@ -32,7 +31,7 @@ export default class App extends PureComponent {
   //The first is displayed on the page, and the 2nd is saved for later use
   componentDidMount() {
     this.buildPhotoStates();
-    this.performSearch('solar flare');
+    this.performSearch('sea shells');
   }
 
   //This downloads the <Nav> button items as "loadedSearch" in state for later retrieval
@@ -51,80 +50,43 @@ export default class App extends PureComponent {
     }
   }
 
-  //Sets the state of query to the search input text
-  onSearchChange = (e) => {
+  handleNoResults(){
     this.setState({
-      query: e.target.value,
-      redirect: true
+      activeSearch: null,
+      h2: 'Sorry'
     });
-  };
-
-  //Sends a new API request using the search input and updates state to allow a new path to be rendered
-  handleSubmit = (e) => {
-    e.preventDefault();
-    this.performSearch(this.state.query);
-    this.setState({
-      redirect: true
-    });
-    e.currentTarget.reset();
-  };
+  }
 
   //Takes input and returns photos from the Flickr API
   //API key is saved in ./config.js
   performSearch = (query) => {
-      axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&safe_search=1&content_type=photo&extras=url_l,url_sq&per_page=24&page=1&format=json&nojsoncallback=1`)
-          //Response is returned in JSON as requested from the API
-          .then(response => {
+    axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&safe_search=1&content_type=photo&extras=url_l,url_sq&per_page=24&page=1&format=json&nojsoncallback=1`)
+    //Response is returned in JSON as requested from the API
+        .then(response => {
 
-            //Checks to see if the search returned any results
-            (response.data.photos.photo.length > 0)
-                ?
-                  this.setState({
-                    activeSearch: response.data.photos.photo,
-                    loading: false,
-                    h2: query,
-                    query
-                  })
-                : this.searchPath('no results');
-          })
-          .catch(error => {
-            console.log('Error fetching and parsing data', error);
-          });
+          //Checks to see if the search returned any results
+          (response.data.photos.photo.length > 0)
+              ?
+              this.setState({
+                activeSearch: response.data.photos.photo,
+                loading: false,
+                h2: query,
+                query
+              })
+              : this.handleNoResults()
+        })
+        .catch(error => {
+          console.log('Error fetching and parsing data', error);
+        });
   };
-
-  //Changes the status of redirect to false when the Nav links are clicked
-  resetRedirect(){
-    if(this.state.activeSearch) {
-      this.setState({
-        redirect: false,
-      });
-      this.searchPath();
-    }
-  }
-
-  //Changes the path for search results
-  searchPath(string){
-    console.log(this.state.redirect + " " + this.state.loading );
-    if((this.state.redirect) && (string === 'no results')){
-      this.setState({
-        h2: 'Sorry',
-        activeSearch: [],
-        redirect: false
-      });
-      return <Route path="/no-search-results"/>
-    } else if ((this.state.redirect) && (!this.state.loading)){
-        return <Redirect to="/search"/>
-    }
-  }
 
   //Renders the page
   render () {
   return (
     <BrowserRouter>
       <div className="container">
-        <Route path="/" render={()=><Search onSearchChange={this.onSearchChange} handleSubmit={this.handleSubmit} />} />
-        {this.searchPath()}
-        <Nav performSearch={this.performSearch} resetRedirect={this.resetRedirect}/>
+        <SearchForm performSearch={this.performSearch}/>
+        <Nav performSearch={this.performSearch} />
         <nav className="photo-container">
         <h2>{(this.state.h2 === 'Sorry')? 'Sorry' : `${this.state.h2} Photos`}</h2>
           {
