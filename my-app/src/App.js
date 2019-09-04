@@ -21,7 +21,8 @@ export default class App extends PureComponent {
           this.state = {
             loading: true,
             loadedSearch: ['dry tortugas', 'sea turtles', 'sand crabs'],
-            query: 'dry tortugas'
+            query: 'dry tortugas',
+            redirect: false
           }
   }
 
@@ -51,7 +52,8 @@ export default class App extends PureComponent {
   //Handles the activeSearch input upon change
   onSearchChange = (e) => {
     this.setState({
-      query: e.target.value
+      query: e.target.value,
+      redirect: true
     });
   };
 
@@ -59,6 +61,9 @@ export default class App extends PureComponent {
   handleSubmit = (e) => {
     e.preventDefault();
     this.performSearch(this.state.query);
+    this.setState({
+      redirect: true
+    });
     e.currentTarget.reset();
   };
 
@@ -80,13 +85,27 @@ export default class App extends PureComponent {
           });
   };
 
+  resetRedirect(){
+    this.setState({
+      redirect: false
+    })
+  }
+
+  renderRedirect(){
+    if (this.state.redirect)
+    {
+      return <Redirect to="/search"/>
+    }
+  }
+
   //Renders the page
   render () {
   return (
     <BrowserRouter>
       <div className="container">
-        <Route path="/" render={()=><Search onSearchChange={this.onSearchChange} handleSubmit={this.handleSubmit}/>} />
-        <Nav performSearch={this.performSearch}/>
+        <Route path="/" render={()=><Search to='/search' onSearchChange={this.onSearchChange} handleSubmit={this.handleSubmit} />} />
+        {this.renderRedirect()}
+        <Nav performSearch={this.performSearch} resetRedirect={this.resetRedirect}/>
         <nav className="photo-container">
         {
           (this.state.loading)
