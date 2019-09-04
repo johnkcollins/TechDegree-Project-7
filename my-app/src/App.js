@@ -35,7 +35,7 @@ export default class App extends PureComponent {
     this.performSearch('solar flare');
   }
 
-  //This downloads the button items as "loadedSearch" in state for later retrieval
+  //This downloads the <Nav> button items as "loadedSearch" in state for later retrieval
   buildPhotoStates (){
     let searches = this.state.loadedSearch;
     for(let i = 0; i < searches.length; i++){
@@ -51,7 +51,7 @@ export default class App extends PureComponent {
     }
   }
 
-  //Handles the activeSearch input upon change
+  //Sets the state of query to the search input text
   onSearchChange = (e) => {
     this.setState({
       query: e.target.value,
@@ -59,7 +59,7 @@ export default class App extends PureComponent {
     });
   };
 
-  //Handles the activeSearch input upon submit
+  //Sends a new API request using the search input and updates state to allow a new path to be rendered
   handleSubmit = (e) => {
     e.preventDefault();
     this.performSearch(this.state.query);
@@ -104,18 +104,16 @@ export default class App extends PureComponent {
 
   //Changes the path for search results
   searchPath(string){
-    console.log(this.state.activeSearch.length + " " + this.state.loading);
-    if(string === 'no results'){
+    console.log(this.state.redirect + " " + this.state.loading );
+    if((this.state.redirect) && (string === 'no results')){
       this.setState({
         h2: 'Sorry',
         activeSearch: [],
-        redirect: true
+        redirect: false
       });
-      return <Route path="/no-results" component={NotFound}/>
-    } else if ((this.state.activeSearch) && (!string === 'no results')){
-      if(this.state.activeSearch.length > 0) {
+      return <Route path="/no-search-results"/>
+    } else if ((this.state.redirect) && (!this.state.loading)){
         return <Redirect to="/search"/>
-      }
     }
   }
 
