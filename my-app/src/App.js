@@ -61,7 +61,7 @@ export default class App extends PureComponent {
   //API key is saved in ./config.js
   performSearch = (query) => {
     axios.get(`https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=${apiKey}&tags=${query}&safe_search=1&content_type=photo&extras=url_l,url_sq&per_page=24&page=1&format=json&nojsoncallback=1`)
-    //Response is returned in JSON as requested from the API
+        //Response is returned in JSON as requested from the API
         .then(response => {
 
           //Checks to see if the search returned any results
@@ -71,7 +71,7 @@ export default class App extends PureComponent {
                 activeSearch: response.data.photos.photo,
                 loading: false,
                 h2: query,
-                query
+                query,
               })
               : this.handleNoResults()
         })
