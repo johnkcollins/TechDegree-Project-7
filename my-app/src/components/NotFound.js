@@ -1,10 +1,10 @@
 import React from 'react';
 
 const NotFound = () => (
-    <li className="no-photos">
-      <i>No Results Found</i>
-      <h3>That search did not return any results, please try again.</h3>
-    </li>
+  <div>
+    <h3>No Results Found</h3>
+    <h4>That search did not return any results, please try again.</h4>
+  </div>
 );
 
 export default NotFound;
