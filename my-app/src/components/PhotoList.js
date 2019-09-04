@@ -10,8 +10,8 @@ const PhotoList = props => {
   //Retrieves the url data within props
   function getUrl(data) {
     return (data.url_l
-     ? data.url_l
-     : data.url_sq);
+        ? data.url_l
+        : data.url_sq);
   }
   if((!props.data.loading) && (props.data.query) && (props.data.activeSearch !== null)){
     photos = results.map(photo => <Photo url={getUrl(photo)} key={photo.id}/>);
